@@ -4,21 +4,38 @@ import './App.css';
 
 class App extends Component {
   render() {
-    const helloWorld = `Welcome to The Road to React`;
-    const user = {
-      firstName: 'Johnny',
-      lastName: 'Cage'
-    };
+    const list = [
+      {
+        title: 'React',
+        url: 'http://facebook.github.io/react',
+        author: 'Jordan Walke',
+        num_comments: 3, 
+        points: 4,
+        objectId: 0
+      },
+      {
+        title: 'Redux',
+        url: 'http://github.com/reactjs/redux',
+        author: 'Dan Abramov, Andrew Clark',
+        num_comments: 2, 
+        points: 5,
+        objectId: 1
+      }
+    ];
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <h2>{helloWorld}, {user.firstName} {user.lastName}</h2>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        {list.map(item => 
+          <div key={item.objectId}>
+            <span><a href={item.url}>{item.title}</a></span>
+            <span>{item.author}</span>
+            <span>{item.num_comments}</span>
+            <span>{item.points}</span>
+          </div>
+        )}
       </div>
     );
   }
