@@ -21,13 +21,21 @@ const list = [
   }
 ];
 
+// Higher Order function defined outside of component
+const isSearched = searchTerm => item => item.title.toLowerCase().includes(searchTerm.toLowerCase());
+
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       list,
+      searchTerm: ''
     }
+  }
+
+  onSearchChange = e => {
+    this.setState({ searchTerm: e.target.value });
   }
 
   onDismiss = (id) => {
@@ -36,14 +44,20 @@ class App extends Component {
   }
 
   render() {
-    const { list } = this.state;
+    const { list, searchTerm } = this.state;
+    const filteredList = list.filter(isSearched(searchTerm));
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        {list.map(item =>
+        <form>
+          <input
+            onChange={this.onSearchChange}
+            />
+        </form>
+        {filteredList.map(item =>
           <div key={item.objectId}>
             <span><a href={item.url}>{item.title}</a></span>{' '}
             <span>{item.author}</span>{' '}
