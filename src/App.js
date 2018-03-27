@@ -29,6 +29,12 @@ class App extends Component {
       list,
     }
   }
+
+  onDismiss = (id) => {
+    const updatedList = this.state.list.filter(item => item.objectId !== id);
+    this.setState({ list: updatedList });
+  }
+
   render() {
     const { list } = this.state;
     return (
@@ -39,10 +45,18 @@ class App extends Component {
         </header>
         {list.map(item =>
           <div key={item.objectId}>
-            <span><a href={item.url}>{item.title}</a></span>
-            <span>{item.author}</span>
-            <span>{item.num_comments}</span>
-            <span>{item.points}</span>
+            <span><a href={item.url}>{item.title}</a></span>{' '}
+            <span>{item.author}</span>{' '}
+            <span>{item.num_comments}</span>{' '}
+            <span>{item.points}</span>{' '}
+            <span>
+              <button
+                onClick={() => this.onDismiss(item.objectId)}
+                type="button"
+              >
+                Dismiss
+                </button>
+            </span>
           </div>
         )}
       </div>
