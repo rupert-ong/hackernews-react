@@ -51,8 +51,6 @@ class App extends Component {
   render() {
     const { result, searchTerm, error } = this.state;
 
-    if(!result) return null;
-
     if(error) {
       return <p>{error.message}</p>;
     }
@@ -66,11 +64,14 @@ class App extends Component {
           >
             Search
           </Search>
-          <Table
-            list={result.hits}
-            pattern={searchTerm}
-            onDismiss={this.onDismiss}
-          />
+          { result
+            ? <Table
+                list={result.hits}
+                pattern={searchTerm}
+                onDismiss={this.onDismiss}
+              />
+            : <p>No results found</p>
+          }
         </div>
       </div>
     );
