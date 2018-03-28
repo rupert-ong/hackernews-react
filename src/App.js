@@ -45,7 +45,6 @@ class App extends Component {
 
   render() {
     const { list, searchTerm } = this.state;
-    const filteredList = list.filter(isSearched(searchTerm));
     return (
       <div className="App">
         <header className="App-header">
@@ -55,7 +54,9 @@ class App extends Component {
         <Search
           value={searchTerm}
           onChange={this.onSearchChange}
-        />
+        >
+          Search
+        </Search>
         <Table
           list={list}
           pattern={searchTerm}
@@ -68,9 +69,10 @@ class App extends Component {
 
 class Search extends Component {
   render() {
-    const { searchTerm, onChange } = this.props;
+    const { searchTerm, onChange, children } = this.props;
     return (
       <form>
+        {children && <label>{children}</label>}
         <input
           type="text"
           value={searchTerm}
@@ -92,17 +94,36 @@ class Table extends Component {
             <span>{item.author}</span>{' '}
             <span>{item.num_comments}</span>{' '}
             <span>{item.points}</span>{' '}
-            <span>  
-              <button
-                onClick={() => this.onDismiss(item.objectId)}
-                type="button"
+            <span>
+              <Button
+                onClick={() => onDismiss(item.objectId)}
               >
                 Dismiss
-              </button>
+              </Button>
             </span>
           </div>
         )}
       </div>
+    );
+  }
+}
+
+class Button extends Component {
+  render() {
+    const {
+      children,
+      className = '',
+      onClick
+    } = this.props;
+
+    return (
+      <button
+        className={className}
+        onClick={onClick}
+        type="button"
+      >
+        {children}
+      </button>
     );
   }
 }
