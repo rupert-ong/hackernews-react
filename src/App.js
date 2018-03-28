@@ -7,9 +7,6 @@ const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 
-// Higher Order function defined outside of component
-const isSearched = searchTerm => item => item.title.toLowerCase().includes(searchTerm.toLowerCase());
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -25,6 +22,12 @@ class App extends Component {
     this.setState({ searchTerm: e.target.value });
   }
 
+  onSearchSubmit = e => {
+    const { searchTerm } = this.state;
+    this.fetchSearchTopStories(searchTerm);
+    e.preventDefault();
+  }
+
   onDismiss = (id) => {
     const isNotId = item => item.objectID !== id;
     const updatedHits = this.state.result.hits.filter(isNotId);
@@ -37,15 +40,19 @@ class App extends Component {
     this.setState({ error: null, result });
   }
 
+  fetchSearchTopStories(searchTerm) {
+    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+    .then(response => {
+      if(response.ok) return response.json();
+      throw new Error('Something went wrong...');
+    })
+    .then(result => this.setSearchTopStories(result))
+    .catch(error => this.setState({ error }));
+  }
+
   componentDidMount() {
     const { searchTerm } = this.state;
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
-      .then(response => {
-        if(response.ok) return response.json();
-        throw new Error('Something went wrong...');
-      })
-      .then(result => this.setSearchTopStories(result))
-      .catch(error => this.setState({ error }));
+    this.fetchSearchTopStories(searchTerm);
   }
 
   render() {
@@ -61,13 +68,13 @@ class App extends Component {
           <Search
             value={searchTerm}
             onChange={this.onSearchChange}
+            onSubmit={this.onSearchSubmit}
           >
             Search
           </Search>
           { result
             ? <Table
                 list={result.hits}
-                pattern={searchTerm}
                 onDismiss={this.onDismiss}
               />
             : <p>No results found</p>
@@ -78,19 +85,19 @@ class App extends Component {
   }
 }
 
-const Search = ({ value, onChange, children }) =>
-  <form>
-    {children && <label>{children}</label>}
+const Search = ({ value, onChange, onSubmit, children }) =>
+  <form onSubmit={onSubmit}>
     <input
       type="text"
       value={value}
       onChange={onChange}
     />
+    <button type="submit">{children}</button>
   </form>
 
 const Table = ({ list, onDismiss, pattern }) =>
   <div className="table">
-    {list.filter(isSearched(pattern)).map(item =>
+    {list.map(item =>
       <div key={item.objectID} className="table-row">
         <span style={{ width: '40%' }}><a href={item.url}>{item.title}</a></span>
         <span style={{ width: '30%' }}>{item.author}</span>
