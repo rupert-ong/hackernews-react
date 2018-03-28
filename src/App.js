@@ -26,8 +26,11 @@ class App extends Component {
   }
 
   onDismiss = (id) => {
-    const updatedList = this.state.result.filter(item => item.objectId !== id);
-    this.setState({ result: updatedList });
+    const isNotId = item => item.objectID !== id;
+    const updatedHits = this.state.result.hits.filter(isNotId);
+    this.setState({ 
+      result: { ...this.state.result, hits: updatedHits }
+    });
   }
 
   setSearchTopStories(result) {
@@ -87,14 +90,14 @@ const Search = ({ searchTerm, onChange, children }) =>
 const Table = ({ list, onDismiss, pattern }) =>
   <div className="table">
     {list.filter(isSearched(pattern)).map(item =>
-      <div key={item.objectId} className="table-row">
+      <div key={item.objectID} className="table-row">
         <span style={{ width: '40%' }}><a href={item.url}>{item.title}</a></span>
         <span style={{ width: '30%' }}>{item.author}</span>
         <span style={{ width: '10%' }}>{item.num_comments}</span>
         <span style={{ width: '10%' }}>{item.points}</span>
         <span style={{ width: '10%' }}>
           <Button
-            onClick={() => onDismiss(item.objectId)}
+            onClick={() => onDismiss(item.objectID)}
             className="button-inline"
           >
             Dismiss
