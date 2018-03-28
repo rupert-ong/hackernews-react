@@ -77,12 +77,12 @@ class App extends Component {
   }
 }
 
-const Search = ({ searchTerm, onChange, children }) =>
+const Search = ({ value, onChange, children }) =>
   <form>
     {children && <label>{children}</label>}
     <input
       type="text"
-      value={searchTerm}
+      value={value}
       onChange={onChange}
     />
   </form>
