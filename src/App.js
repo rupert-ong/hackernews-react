@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import './App.css';
 
 const DEFAULT_QUERY = 'redux';
+const DEFAULT_HPP = '100';
 
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
+const PARAM_PAGE = 'page=';
+const PARAM_HPP = 'hitsPerPage=';
 
 class App extends Component {
   constructor(props) {
@@ -15,6 +18,7 @@ class App extends Component {
       result: null,
       searchTerm: DEFAULT_QUERY,
       error: null,
+      isLoading: false
     }
   }
 
@@ -37,17 +41,30 @@ class App extends Component {
   }
 
   setSearchTopStories(result) {
-    this.setState({ error: null, result });
+    const { hits, page } = result;
+    const oldHits = page !== 0
+      ? this.state.result.hits
+      : [];
+    const updatedHits = [
+      ...oldHits,
+      ...hits
+    ]
+    this.setState({ 
+      error: null, 
+      result: {hits: updatedHits, page },
+      isLoading: false
+    });
   }
 
-  fetchSearchTopStories(searchTerm) {
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+  fetchSearchTopStories(searchTerm, page=0) {
+    this.setState({ isLoading: true });
+    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
     .then(response => {
       if(response.ok) return response.json();
       throw new Error('Something went wrong...');
     })
     .then(result => this.setSearchTopStories(result))
-    .catch(error => this.setState({ error }));
+    .catch(error => this.setState({ isLoading: false, error }));
   }
 
   componentDidMount() {
@@ -56,7 +73,8 @@ class App extends Component {
   }
 
   render() {
-    const { result, searchTerm, error } = this.state;
+    const { result, searchTerm, error, isLoading } = this.state;
+    const page = (result && result.page) || 0;
 
     if(error) {
       return <p>{error.message}</p>;
@@ -72,6 +90,7 @@ class App extends Component {
           >
             Search
           </Search>
+        </div>
           { result
             ? <Table
                 list={result.hits}
@@ -79,6 +98,13 @@ class App extends Component {
               />
             : <p>No results found</p>
           }
+        <div className="interactions">
+          <Button 
+              onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}
+              disabled={isLoading}
+            >
+              More
+          </Button>
         </div>
       </div>
     );
@@ -115,11 +141,12 @@ const Table = ({ list, onDismiss, pattern }) =>
     )}
   </div>
 
-const Button = ({ children, className = '', onClick }) => 
+const Button = ({ children, className = '', disabled = false, onClick }) => 
   <button
     className={className}
     onClick={onClick}
     type="button"
+    disabled={disabled}
   >
     {children}
   </button>
