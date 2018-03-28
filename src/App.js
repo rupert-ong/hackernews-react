@@ -52,24 +52,53 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <form>
-          <input
-            onChange={this.onSearchChange}
-            />
-        </form>
-        {filteredList.map(item =>
+        <Search
+          value={searchTerm}
+          onChange={this.onSearchChange}
+        />
+        <Table
+          list={list}
+          pattern={searchTerm}
+          onDismiss={this.onDismiss}
+        />
+      </div>
+    );
+  }
+}
+
+class Search extends Component {
+  render() {
+    const { searchTerm, onChange } = this.props;
+    return (
+      <form>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={onChange}
+        />
+      </form>
+    );
+  }
+}
+
+class Table extends Component {
+  render() {
+    const { list, onDismiss, pattern } = this.props;
+    return (
+      <div>
+        {list.filter(isSearched(pattern)).map(item =>
           <div key={item.objectId}>
             <span><a href={item.url}>{item.title}</a></span>{' '}
             <span>{item.author}</span>{' '}
             <span>{item.num_comments}</span>{' '}
             <span>{item.points}</span>{' '}
-            <span>
+            <span>  
               <button
                 onClick={() => this.onDismiss(item.objectId)}
                 type="button"
               >
                 Dismiss
-                </button>
+              </button>
             </span>
           </div>
         )}
