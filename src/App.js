@@ -91,12 +91,12 @@ class App extends Component {
             Search
           </Search>
         </div>
-          { result
+          { (result && result.hits.length)
             ? <Table
                 list={result.hits}
                 onDismiss={this.onDismiss}
               />
-            : <p>No results found</p>
+            : <p style={{ textAlign: 'center' }}>No results found</p>
           }
         <div className="interactions">
           <Button 
