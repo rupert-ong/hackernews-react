@@ -15,7 +15,8 @@ class App extends Component {
     super(props);
 
     this.state = {
-      result: null,
+      results: null,
+      searchKey: '',
       searchTerm: DEFAULT_QUERY,
       error: null,
       isLoading: false
@@ -28,55 +29,82 @@ class App extends Component {
 
   onSearchSubmit = e => {
     const { searchTerm } = this.state;
+    this.setState({
+      searchKey: searchTerm
+    });
     this.fetchSearchTopStories(searchTerm);
     e.preventDefault();
   }
 
   onDismiss = (id) => {
     const isNotId = item => item.objectID !== id;
-    const updatedHits = this.state.result.hits.filter(isNotId);
-    this.setState({ 
-      result: { ...this.state.result, hits: updatedHits }
+    const updatedHits = this.state.results.hits.filter(isNotId);
+    this.setState({
+      results: { ...this.state.results, hits: updatedHits }
     });
   }
 
   setSearchTopStories(result) {
     const { hits, page } = result;
-    const oldHits = page !== 0
-      ? this.state.result.hits
+    const { searchKey, results } = this.state;
+    const oldHits = results && results[searchKey]
+      ? results[searchKey].hits
       : [];
     const updatedHits = [
       ...oldHits,
       ...hits
     ]
-    this.setState({ 
-      error: null, 
-      result: {hits: updatedHits, page },
+    this.setState({
+      error: null,
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page }
+      },
       isLoading: false
     });
   }
 
-  fetchSearchTopStories(searchTerm, page=0) {
+  fetchSearchTopStories(searchTerm, page = 0) {
     this.setState({ isLoading: true });
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
-    .then(response => {
-      if(response.ok) return response.json();
-      throw new Error('Something went wrong...');
-    })
-    .then(result => this.setSearchTopStories(result))
-    .catch(error => this.setState({ isLoading: false, error }));
+      .then(response => {
+        if (response.ok) return response.json();
+        throw new Error('Something went wrong...');
+      })
+      .then(result => this.setSearchTopStories(result))
+      .catch(error => this.setState({ isLoading: false, error }));
   }
 
   componentDidMount() {
     const { searchTerm } = this.state;
+    this.setState({
+      searchKey: searchTerm
+    });
     this.fetchSearchTopStories(searchTerm);
   }
 
   render() {
-    const { result, searchTerm, error, isLoading } = this.state;
-    const page = (result && result.page) || 0;
+    const {
+      results,
+      searchKey,
+      searchTerm,
+      error,
+      isLoading
+    } = this.state;
 
-    if(error) {
+    const page = (
+      results &&
+      results[searchKey] &&
+      results[searchKey].page
+    ) || 0;
+
+    const list = (
+      results &&
+      results[searchKey] &&
+      results[searchKey].hits
+    ) || [];
+
+    if (error) {
       return <p>{error.message}</p>;
     }
 
@@ -91,19 +119,19 @@ class App extends Component {
             Search
           </Search>
         </div>
-          { (result && result.hits.length)
-            ? <Table
-                list={result.hits}
-                onDismiss={this.onDismiss}
-              />
-            : <p style={{ textAlign: 'center' }}>No results found</p>
-          }
+        {(list.length)
+          ? <Table
+            list={list}
+            onDismiss={this.onDismiss}
+          />
+          : <p style={{ textAlign: 'center' }}>No results found</p>
+        }
         <div className="interactions">
-          <Button 
-              onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}
-              disabled={isLoading}
-            >
-              More
+          <Button
+            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
+            disabled={isLoading}
+          >
+            More
           </Button>
         </div>
       </div>
@@ -141,7 +169,7 @@ const Table = ({ list, onDismiss, pattern }) =>
     )}
   </div>
 
-const Button = ({ children, className = '', disabled = false, onClick }) => 
+const Button = ({ children, className = '', disabled = false, onClick }) =>
   <button
     className={className}
     onClick={onClick}
