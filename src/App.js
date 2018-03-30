@@ -115,10 +115,6 @@ class App extends Component {
       results[searchKey].hits
     ) || [];
 
-    if (error) {
-      return <p>{error.message}</p>;
-    }
-
     return (
       <div className="page">
         <div className="interactions">
@@ -130,12 +126,12 @@ class App extends Component {
             Search
           </Search>
         </div>
-        {(list.length)
-          ? <Table
+        { error
+          ? <div className="interactions"><p>{error.message}</p></div>
+          : <Table
             list={list}
             onDismiss={this.onDismiss}
           />
-          : <p style={{ textAlign: 'center' }}>No results found</p>
         }
         <div className="interactions">
           <Button
