@@ -32,7 +32,9 @@ class App extends Component {
     this.setState({
       searchKey: searchTerm
     });
-    this.fetchSearchTopStories(searchTerm);
+    if (this.needToSearchTopStories(searchTerm)) {
+      this.fetchSearchTopStories(searchTerm);
+    }
     e.preventDefault();
   }
 
@@ -42,7 +44,7 @@ class App extends Component {
     const isNotId = item => item.objectID !== id;
     const updatedHits = hits.filter(isNotId);
     this.setState({
-      results: { 
+      results: {
         ...results,
         [searchKey]: { hits: updatedHits, page }
       }
@@ -67,6 +69,10 @@ class App extends Component {
       },
       isLoading: false
     });
+  }
+
+  needToSearchTopStories(searchTerm) {
+    return !this.state.results[searchTerm];
   }
 
   fetchSearchTopStories(searchTerm, page = 0) {
