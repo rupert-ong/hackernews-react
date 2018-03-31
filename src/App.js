@@ -186,4 +186,10 @@ const Button = ({ children, className = '', disabled = false, onClick }) =>
     {children}
   </button>
 
+export {
+  Button,
+  Search,
+  Table
+};
+
 export default App;
