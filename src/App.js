@@ -14,21 +14,17 @@ const PARAM_HPP = 'hitsPerPage=';
 class App extends Component {
   _isMounted = false;
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      results: null,
-      searchKey: '',
-      searchTerm: DEFAULT_QUERY,
-      error: null,
-      isLoading: false
-    }
-  }
+  state = {
+    results: null,
+    searchKey: '',
+    searchTerm: DEFAULT_QUERY,
+    error: null,
+    isLoading: false
+  };
 
   onSearchChange = e => {
     this.setState({ searchTerm: e.target.value });
-  }
+  };
 
   onSearchSubmit = e => {
     const { searchTerm } = this.state;
@@ -39,7 +35,7 @@ class App extends Component {
       this.fetchSearchTopStories(searchTerm);
     }
     e.preventDefault();
-  }
+  };
 
   onDismiss = (id) => {
     const { searchKey, results } = this.state;
@@ -52,7 +48,7 @@ class App extends Component {
         [searchKey]: { hits: updatedHits, page }
       }
     });
-  }
+  };
 
   setSearchTopStories(result) {
     const { hits, page } = result;
