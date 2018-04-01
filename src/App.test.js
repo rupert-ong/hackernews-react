@@ -1,7 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+// Test Renderer for Jest
 import TestRenderer from 'react-test-renderer';
+// Dependencies for Enzyme
+import Enzyme, { shallow, mount } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
 import App, { Button, Search, Table } from './App';
+
+Enzyme.configure({ adapter: new Adapter( )});
 
 describe('App', () => {
   it('renders without crashing', () => {
@@ -44,6 +51,17 @@ describe('Button', () => {
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
+
+  // Enzyme unit test
+  it('renders children properly', () => {
+    const element = mount( <Button>Click Me</Button> );
+    expect(element.children().text()).toBe('Click Me');
+  });
+
+  it('renders class properly', () => {
+    const element = mount( <Button className='bert'>Click Me</Button> );
+    expect(element.hasClass('bert'));
+  });
 });
 
 describe('Table', () => {
@@ -77,5 +95,11 @@ describe('Table', () => {
     const component = TestRenderer.create(<Table {...props} />);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
-  })
+  });
+
+  // Enzyme shallow unit test (does not render child components)
+  it('shows 2 items in list', () => {
+    const element = shallow(<Table {...props}/>);
+    expect(element.find('.table-row').length).toBe(2);
+  });
 });
