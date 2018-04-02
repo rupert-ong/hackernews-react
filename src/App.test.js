@@ -6,7 +6,7 @@ import TestRenderer from 'react-test-renderer';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import App, { Button, Search, Table } from './App';
+import App, { Button, Loading, Search, Table } from './App';
 
 Enzyme.configure({ adapter: new Adapter( )});
 
@@ -20,6 +20,20 @@ describe('App', () => {
   // Jest test snapshot
   test('has a valid snapshot', () => {
     const component = TestRenderer.create(<App />);
+    let tree = component.toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+});
+
+describe('Loading', () => {
+  it('renders without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<Loading/>, div);
+    ReactDOM.unmountComponentAtNode(div);
+  });
+
+  test('has a valid snapshot', () => {
+    const component = TestRenderer.create(<Loading />);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });

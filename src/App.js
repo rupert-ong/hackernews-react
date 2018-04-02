@@ -135,12 +135,15 @@ class App extends Component {
           />
         }
         <div className="interactions">
-          <Button
-            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
-            disabled={isLoading}
-          >
-            More
-          </Button>
+        {
+          isLoading
+          ? <Loading/>
+          : <Button
+              onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
+            >
+              More
+            </Button>
+        }
         </div>
       </div>
     );
@@ -233,13 +236,17 @@ const Button = ({ children, className = '', disabled = false, onClick }) =>
   </button>
 
 Button.propTypes = {
-  className: PropTypes.string,
-  onClick: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
 };
+
+const Loading = () => <div>Loading...</div>
 
 export {
   Button,
+  Loading,
   Search,
   Table
 };
