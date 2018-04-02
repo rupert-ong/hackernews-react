@@ -83,7 +83,9 @@ describe('Table', () => {
         points: 2,
         objectID: 'z'
       },
-    ]
+    ],
+
+    onDismiss: () => true
   };
 
   it('renders without crashing', () => {

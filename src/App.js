@@ -157,7 +157,7 @@ const Search = ({ value, onChange, onSubmit, children }) =>
     <button type="submit">{children}</button>
   </form>
 
-const Table = ({ list, onDismiss, pattern }) =>
+const Table = ({ list, onDismiss }) =>
   <div className="table">
     {list.map(item =>
       <div key={item.objectID} className="table-row">
@@ -176,6 +176,19 @@ const Table = ({ list, onDismiss, pattern }) =>
       </div>
     )}
   </div>
+
+Table.propTypes = {
+  onDismiss: PropTypes.func.isRequired,
+  list: PropTypes.arrayOf(
+    PropTypes.shape({
+      objectID: PropTypes.string.isRequired,
+      author: PropTypes.string,
+      url: PropTypes.string,
+      num_comments: PropTypes.number,
+      points: PropTypes.number,
+    })
+  ).isRequired
+};
 
 const Button = ({ children, className = '', disabled = false, onClick }) =>
   <button
