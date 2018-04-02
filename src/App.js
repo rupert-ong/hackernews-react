@@ -147,24 +147,47 @@ class App extends Component {
   }
 }
 
-const Search = ({ value, onChange, onSubmit, children }) =>
-  <form onSubmit={onSubmit}>
-    <input
-      type="text"
-      value={value}
-      onChange={onChange}
-    />
-    <button type="submit">{children}</button>
-  </form>
+class Search extends React.Component {
+  static propTypes = {
+    onChange: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    children: PropTypes.node.isRequired,
+  }
 
-Search.propTypes = {
-  onChange: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  children: PropTypes.node.isRequired,
-};
-Search.defaultProps = {
-  value: ''
-};
+  static defaultProps = {
+    value: ''
+  }
+  
+  componentDidMount(){
+    if(this.input) {
+      let input = this.input,
+        len = input.value.length;
+      input.focus();
+      input.setSelectionRange(len, len);
+    }
+  }
+
+  render(){
+    const { 
+      value,
+      onChange,
+      onSubmit,
+      children 
+    } = this.props;
+
+    return (
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          value={value}
+          onChange={onChange}
+          ref={(node) => { this.input = node; }}
+        />
+        <button type="submit">{children}</button>
+      </form>
+    );
+  }
+}
 
 const Table = ({ list, onDismiss }) =>
   <div className="table">
