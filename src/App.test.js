@@ -42,24 +42,24 @@ describe('Search', () => {
 describe('Button', () => {
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Button>Click Me</Button>, div);
+    ReactDOM.render(<Button onClick={() => true}>Click Me</Button>, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 
   test('has a valid snapshot', () => {
-    const component = TestRenderer.create(<Button>Click Me</Button>);
+    const component = TestRenderer.create(<Button onClick={() => true}>Click Me</Button>);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
 
   // Enzyme unit test
   it('renders children properly', () => {
-    const element = mount( <Button>Click Me</Button> );
+    const element = mount( <Button onClick={() => true}>Click Me</Button> );
     expect(element.children().text()).toBe('Click Me');
   });
 
   it('renders class properly', () => {
-    const element = mount( <Button className='bert'>Click Me</Button> );
+    const element = mount( <Button onClick={() => true} className='bert'>Click Me</Button> );
     expect(element.hasClass('bert'));
   });
 });

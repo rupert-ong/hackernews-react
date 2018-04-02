@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import './App.css';
 
 const DEFAULT_QUERY = 'redux';
@@ -185,6 +186,12 @@ const Button = ({ children, className = '', disabled = false, onClick }) =>
   >
     {children}
   </button>
+
+Button.propTypes = {
+  className: PropTypes.string,
+  onClick: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
+};
 
 export {
   Button,
