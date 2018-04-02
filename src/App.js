@@ -157,6 +157,15 @@ const Search = ({ value, onChange, onSubmit, children }) =>
     <button type="submit">{children}</button>
   </form>
 
+Search.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
+};
+Search.defaultProps = {
+  value: ''
+};
+
 const Table = ({ list, onDismiss }) =>
   <div className="table">
     {list.map(item =>

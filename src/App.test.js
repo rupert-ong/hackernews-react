@@ -26,14 +26,18 @@ describe('App', () => {
 });
 
 describe('Search', () => {
+  const props = {
+    onChange: () => true,
+    onSubmit: () => true,
+  }
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Search>Search</Search>, div);
+    ReactDOM.render(<Search {...props}>Search</Search>, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 
   test('has a valid snapshot', () => {
-    const component = TestRenderer.create(<Search>Search</Search>);
+    const component = TestRenderer.create(<Search {...props}>Search</Search>);
     let tree = component.toJSON();
     expect(tree).toMatchSnapshot();
   });
