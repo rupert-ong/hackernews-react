@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { sortBy } from 'lodash';
 import './App.css';
 
 const DEFAULT_QUERY = 'redux';
@@ -12,6 +13,14 @@ const PARAM_SEARCH = 'query=';
 const PARAM_PAGE = 'page=';
 const PARAM_HPP = 'hitsPerPage=';
 
+const SORTS = {
+  NONE: list => list,
+  TITLE: list => sortBy(list, 'title'),
+  AUTHOR: list => sortBy(list, 'author'),
+  COMMENTS: list => sortBy(list, 'num_comments').reverse(),
+  POINTS: list => sortBy(list, 'points').reverse(),
+};
+
 class App extends Component {
   _isMounted = false;
 
@@ -20,7 +29,8 @@ class App extends Component {
     searchKey: '',
     searchTerm: DEFAULT_QUERY,
     error: null,
-    isLoading: false
+    isLoading: false,
+    sortKey: 'NONE',
   };
 
   onSearchChange = e => {
@@ -50,6 +60,10 @@ class App extends Component {
       }
     });
   };
+
+  onSort = (sortKey) => {
+    this.setState({ sortKey });
+  }
 
   setSearchTopStories(result) {
     const { hits, page } = result;
@@ -91,7 +105,7 @@ class App extends Component {
     this.fetchSearchTopStories(searchTerm);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this._isMounted = false;
   }
 
@@ -101,7 +115,8 @@ class App extends Component {
       searchKey,
       searchTerm,
       error,
-      isLoading
+      isLoading,
+      sortKey,
     } = this.state;
 
     const page = (
@@ -127,22 +142,24 @@ class App extends Component {
             Search
           </Search>
         </div>
-        { error
+        {error
           ? <div className="interactions"><p>{error.message}</p></div>
           : <Table
             list={list}
             onDismiss={this.onDismiss}
+            sortKey={sortKey}
+            onSort={this.onSort}
           />
         }
         <div className="interactions">
-        {
-          <ButtonWithLoading
-            isLoading={isLoading}
-            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
-          >
-            More
+          {
+            <ButtonWithLoading
+              isLoading={isLoading}
+              onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
+            >
+              More
           </ButtonWithLoading>
-        }
+          }
         </div>
       </div>
     );
@@ -159,9 +176,9 @@ class Search extends React.Component {
   static defaultProps = {
     value: ''
   }
-  
-  componentDidMount(){
-    if(this.input) {
+
+  componentDidMount() {
+    if (this.input) {
       let input = this.input,
         len = input.value.length;
       input.focus();
@@ -169,12 +186,12 @@ class Search extends React.Component {
     }
   }
 
-  render(){
-    const { 
+  render() {
+    const {
       value,
       onChange,
       onSubmit,
-      children 
+      children
     } = this.props;
 
     return (
@@ -191,9 +208,9 @@ class Search extends React.Component {
   }
 }
 
-const Table = ({ list, onDismiss }) =>
+const Table = ({ list, sortKey, onDismiss, onSort }) =>
   <div className="table">
-    {list.map(item =>
+    {SORTS[sortKey](list).map(item =>
       <div key={item.objectID} className="table-row">
         <span style={{ width: '40%' }}><a href={item.url}>{item.title}</a></span>
         <span style={{ width: '30%' }}>{item.author}</span>
@@ -243,8 +260,8 @@ Button.propTypes = {
 
 const Loading = () => <div>Loading...</div>
 
-// Higher-Order Component to add loading (conditional)
-const withLoading = Component => ({isLoading, ...rest}) =>
+// Higher-Order Component to add loading (conditional) to an existing component
+const withLoading = Component => ({ isLoading, ...rest }) =>
   isLoading
     ? <Loading />
     : <Component {...rest} />
