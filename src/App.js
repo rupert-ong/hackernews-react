@@ -225,6 +225,7 @@ const Table = ({ list, sortKey, isSortReverse, onDismiss, onSort }) => {
           <Sort
             sortKey={'TITLE'}
             onSort={onSort}
+            activeSortKey={sortKey}
           >
             Title
           </Sort>
@@ -233,6 +234,7 @@ const Table = ({ list, sortKey, isSortReverse, onDismiss, onSort }) => {
           <Sort
             sortKey={'AUTHOR'}
             onSort={onSort}
+            activeSortKey={sortKey}
           >
             Author
           </Sort>
@@ -241,6 +243,7 @@ const Table = ({ list, sortKey, isSortReverse, onDismiss, onSort }) => {
           <Sort
             sortKey={'COMMENTS'}
             onSort={onSort}
+            activeSortKey={sortKey}
           >
             Comments
           </Sort>
@@ -249,6 +252,7 @@ const Table = ({ list, sortKey, isSortReverse, onDismiss, onSort }) => {
           <Sort
             sortKey={'POINTS'}
             onSort={onSort}
+            activeSortKey={sortKey}
           >
             Points
           </Sort>
@@ -307,12 +311,19 @@ Button.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-const Sort = ({ children, onSort, sortKey }) =>
-  <Button 
-    onClick={() => onSort(sortKey)}
-    className="button-inline">
-    {children}
-  </Button>
+const Sort = ({ children, onSort, sortKey, activeSortKey }) => {
+  const sortClass = ['button-inline'];
+  if(sortKey === activeSortKey) {
+    sortClass.push('button-active')
+  }
+  return (
+    <Button 
+      onClick={() => onSort(sortKey)}
+      className={sortClass.join(' ')}>
+      {children}
+    </Button>
+  );
+}
 
 const Loading = () => <div>Loading...</div>
 
