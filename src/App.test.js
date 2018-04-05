@@ -6,9 +6,9 @@ import TestRenderer from 'react-test-renderer';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
-import App, { Button, Loading, Search, Table } from './App';
+import App, { Button, Loading, Search, Table, updateSearchTopStories } from './App';
 
-Enzyme.configure({ adapter: new Adapter( )});
+Enzyme.configure({ adapter: new Adapter() });
 
 describe('App', () => {
   it('renders without crashing', () => {
@@ -28,7 +28,7 @@ describe('App', () => {
 describe('Loading', () => {
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Loading/>, div);
+    ReactDOM.render(<Loading />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 
@@ -72,12 +72,12 @@ describe('Button', () => {
 
   // Enzyme unit test
   it('renders children properly', () => {
-    const element = mount( <Button onClick={() => true}>Click Me</Button> );
+    const element = mount(<Button onClick={() => true}>Click Me</Button>);
     expect(element.children().text()).toBe('Click Me');
   });
 
   it('renders class properly', () => {
-    const element = mount( <Button onClick={() => true} className='bert'>Click Me</Button> );
+    const element = mount(<Button onClick={() => true} className='bert'>Click Me</Button>);
     expect(element.hasClass('bert'));
   });
 });
@@ -120,7 +120,61 @@ describe('Table', () => {
 
   // Enzyme shallow unit test (does not render child components)
   it('shows 2 items in list', () => {
-    const element = shallow(<Table {...props}/>);
+    const element = shallow(<Table {...props} />);
     expect(element.find('.table-row').length).toBe(2);
+  });
+});
+
+describe('updateSearchTopStories', () => {
+  const oldState = {
+    error: null,
+    isLoading: false,
+    searchKey: 'redux',
+    results: {
+      redux: {
+        hits: [
+          {
+            url: '1',
+            title: '1',
+            author: '1',
+            num_comments: 1,
+            points: 2,
+            objectID: 'y'
+          }
+        ],
+        page: 0
+      }
+    }
+  };
+
+  const newHits = [
+    {
+      url: '2',
+      title: '2',
+      author: '2',
+      num_comments: 1,
+      points: 2,
+      objectID: 'z'
+    }
+  ];
+
+  const updatedHits = [
+    ...oldState.results.redux.hits,
+    ...newHits
+  ];
+
+  const updatedState = {
+    ...oldState,
+    results: {
+      redux: {
+        hits: updatedHits,
+        page: 1
+      }
+    }
+  };
+
+  it('updates state properly', () => {
+    const state = updateSearchTopStories(newHits, 1)(oldState);
+    expect(state.results).toEqual(updatedState.results);
   });
 });

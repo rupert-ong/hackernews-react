@@ -22,6 +22,27 @@ const SORTS = {
   POINTS: list => sortBy(list, 'points').reverse(),
 };
 
+// Higher order function for setSearchTopStories
+const updateSearchTopStories = (hits, page) => prevState => {
+  const { searchKey, results } = prevState;
+  const oldHits = results && results[searchKey]
+    ? results[searchKey].hits
+    : [];
+  const updatedHits = [
+    ...oldHits,
+    ...hits
+  ]
+
+  return {
+    error: null,
+    results: {
+      ...results,
+      [searchKey]: { hits: updatedHits, page }
+    },
+    isLoading: false
+  };
+};
+
 class App extends Component {
   _isMounted = false;
 
@@ -49,10 +70,11 @@ class App extends Component {
   };
 
   onDismiss = (id) => {
+    const isNotId = item => item.objectID !== id;
+
     this.setState(prevState => {
       const { searchKey, results } = prevState;
       const { hits, page } = results[searchKey];
-      const isNotId = item => item.objectID !== id;
       const updatedHits = hits.filter(isNotId);
       return {
         results: {
@@ -65,26 +87,7 @@ class App extends Component {
 
   setSearchTopStories(result) {
     const { hits, page } = result;
-
-    this.setState(prevState => {
-      const { searchKey, results } = prevState;
-      const oldHits = results && results[searchKey]
-        ? results[searchKey].hits
-        : [];
-      const updatedHits = [
-        ...oldHits,
-        ...hits
-      ]
-
-      return {
-        error: null,
-        results: {
-          ...results,
-          [searchKey]: { hits: updatedHits, page }
-        },
-        isLoading: false
-      };
-    });
+    this.setState(updateSearchTopStories(hits, page));
   }
 
   needToSearchTopStories(searchTerm) {
@@ -349,7 +352,8 @@ export {
   Button,
   Loading,
   Search,
-  Table
+  Table,
+  updateSearchTopStories,
 };
 
 export default App;
