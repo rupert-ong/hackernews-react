@@ -49,35 +49,41 @@ class App extends Component {
   };
 
   onDismiss = (id) => {
-    const { searchKey, results } = this.state;
-    const { hits, page } = results[searchKey];
-    const isNotId = item => item.objectID !== id;
-    const updatedHits = hits.filter(isNotId);
-    this.setState({
-      results: {
-        ...results,
-        [searchKey]: { hits: updatedHits, page }
-      }
+    this.setState(prevState => {
+      const { searchKey, results } = prevState;
+      const { hits, page } = results[searchKey];
+      const isNotId = item => item.objectID !== id;
+      const updatedHits = hits.filter(isNotId);
+      return {
+        results: {
+          ...results,
+          [searchKey]: { hits: updatedHits, page }
+        }
+      };
     });
   };
 
   setSearchTopStories(result) {
     const { hits, page } = result;
-    const { searchKey, results } = this.state;
-    const oldHits = results && results[searchKey]
-      ? results[searchKey].hits
-      : [];
-    const updatedHits = [
-      ...oldHits,
-      ...hits
-    ]
-    this.setState({
-      error: null,
-      results: {
-        ...results,
-        [searchKey]: { hits: updatedHits, page }
-      },
-      isLoading: false
+
+    this.setState(prevState => {
+      const { searchKey, results } = prevState;
+      const oldHits = results && results[searchKey]
+        ? results[searchKey].hits
+        : [];
+      const updatedHits = [
+        ...oldHits,
+        ...hits
+      ]
+
+      return {
+        error: null,
+        results: {
+          ...results,
+          [searchKey]: { hits: updatedHits, page }
+        },
+        isLoading: false
+      };
     });
   }
 
@@ -208,18 +214,18 @@ class Table extends React.Component {
   }
 
   onSort = (sortKey) => {
-    const isSortReverse =  this.state.sortKey === sortKey && !this.state.isSortReverse;
+    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse;
     this.setState({ sortKey, isSortReverse });
   }
 
-  render(){
-    const { list, onDismiss} = this.props;
+  render() {
+    const { list, onDismiss } = this.props;
     const { sortKey, isSortReverse } = this.state;
     const sortedList = SORTS[sortKey](list);
-    const reversedList = isSortReverse 
+    const reversedList = isSortReverse
       ? sortedList.reverse()
       : sortedList;
-  
+
     return (
       <div className="table">
         <div className="table-header">
@@ -319,9 +325,9 @@ const Sort = ({ children, onSort, sortKey, activeSortKey }) => {
     'button-inline',
     { 'button-active': sortKey === activeSortKey }
   );
-  
+
   return (
-    <Button 
+    <Button
       onClick={() => onSort(sortKey)}
       className={sortClass}>
       {children}
